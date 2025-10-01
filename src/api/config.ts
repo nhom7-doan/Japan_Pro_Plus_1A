@@ -1,13 +1,7 @@
 // Cấu hình API cho backend
-// Sử dụng domain của Replit cho backend API
-const REPLIT_DOMAIN = typeof window !== 'undefined' 
-  ? window.location.hostname 
-  : 'localhost';
-
-export const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 
-  (REPLIT_DOMAIN.includes('replit') 
-    ? `https://${REPLIT_DOMAIN.replace('-5000', '-3000')}` 
-    : 'http://localhost:3000');
+// Trong môi trường Replit development, backend chạy local trên port 3000
+// Frontend và backend đều trên cùng một máy, nên dùng localhost
+export const API_BASE_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3000';
 
 // Helper function để tạo headers cho request
 export const createHeaders = (accessToken?: string) => {
