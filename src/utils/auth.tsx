@@ -1,6 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
 import { projectId, publicAnonKey } from "./supabase/info";
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
 export const supabase = createClient(
   `https://${projectId}.supabase.co`,
   publicAnonKey
@@ -17,12 +19,11 @@ export class AuthService {
   static async signup(email: string, password: string, fullName: string, phone?: string) {
     try {
       const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-68e7fa3d/signup`,
+        `${API_BASE}/api/auth/signup`,
         {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${publicAnonKey}`
+            'Content-Type': 'application/json'
           },
           body: JSON.stringify({ email, password, fullName, phone })
         }

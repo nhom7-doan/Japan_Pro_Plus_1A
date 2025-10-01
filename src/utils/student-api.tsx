@@ -1,7 +1,6 @@
-import { projectId, publicAnonKey } from "./supabase/info";
 import { AuthService } from "./auth";
 
-const API_BASE = `https://${projectId}.supabase.co/functions/v1/make-server-68e7fa3d`;
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 export interface Enrollment {
   userId: string;
@@ -31,7 +30,7 @@ export class StudentAPI {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(`${API_BASE}/profile`, {
+      const response = await fetch(`${API_BASE}/api/student/profile`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
@@ -58,7 +57,7 @@ export class StudentAPI {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(`${API_BASE}/enrollments`, {
+      const response = await fetch(`${API_BASE}/api/student/enrollments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +87,7 @@ export class StudentAPI {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(`${API_BASE}/enrollments`, {
+      const response = await fetch(`${API_BASE}/api/student/enrollments`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
@@ -115,7 +114,7 @@ export class StudentAPI {
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch(`${API_BASE}/grades`, {
+      const response = await fetch(`${API_BASE}/api/student/grades`, {
         headers: {
           'Authorization': `Bearer ${accessToken}`
         }
