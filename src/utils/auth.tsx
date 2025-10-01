@@ -1,113 +1,72 @@
-import { createClient } from "@supabase/supabase-js";
-import { projectId, publicAnonKey } from "./supabase/info";
+// File này re-export từ src/api/ để tương thích với code cũ
+// Để thêm hoặc sửa API, vui lòng chỉnh sửa trong thư mục src/api/
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import * as AuthAPI from '../api/auth';
 
-export const supabase = createClient(
-  `https://${projectId}.supabase.co`,
-  publicAnonKey
-);
+// Re-export tất cả từ api/auth
+export { supabase, type User, type SignUpResponse, type SignInResponse } from '../api/auth';
 
-export interface User {
-  id: string;
-  email: string;
-  fullName?: string;
-}
-
+// Tạo AuthService class để tương thích với code cũ
 export class AuthService {
   // Sign up new user
   static async signup(email: string, password: string, fullName: string, phone?: string) {
-    try {
-      const response = await fetch(
-        `${API_BASE}/api/auth/signup`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password, fullName, phone })
-        }
-      );
-
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to sign up');
-      }
-
-      return { data, error: null };
-    } catch (error) {
-      console.error('Signup error:', error);
-      return { data: null, error: error instanceof Error ? error.message : 'Failed to sign up' };
-    }
+    return AuthAPI.signup(email, password, fullName, phone);
   }
 
   // Sign in
   static async signin(email: string, password: string) {
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (error) throw error;
-
-      return { data, error: null };
-    } catch (error) {
-      console.error('Sign in error:', error);
-      return { data: null, error: error instanceof Error ? error.message : 'Failed to sign in' };
-    }
+    return AuthAPI.signin(email, password);
   }
 
   // Sign out
   static async signout() {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
-      return { error: null };
-    } catch (error) {
-      console.error('Sign out error:', error);
-      return { error: error instanceof Error ? error.message : 'Failed to sign out' };
-    }
+    return AuthAPI.signout();
   }
 
   // Get current session
   static async getSession() {
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) throw error;
-      return { session: data.session, error: null };
-    } catch (error) {
-      console.error('Get session error:', error);
-      return { session: null, error: error instanceof Error ? error.message : 'Failed to get session' };
-    }
+    return AuthAPI.getSession();
   }
 
   // Get current user
-  static async getCurrentUser(): Promise<User | null> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return null;
-
-      return {
-        id: user.id,
-        email: user.email || '',
-        fullName: user.user_metadata?.full_name
-      };
-    } catch (error) {
-      console.error('Get current user error:', error);
-      return null;
-    }
+  static async getCurrentUser() {
+    return AuthAPI.getCurrentUser();
   }
 
   // Get access token
-  static async getAccessToken(): Promise<string | null> {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      return session?.access_token || null;
-    } catch (error) {
-      console.error('Get access token error:', error);
-      return null;
-    }
+  static async getAccessToken() {
+    return AuthAPI.getAccessToken();
+  }
+
+  // Aliases cho tương thích
+  static async signIn(email: string, password: string) {
+    const result = await AuthAPI.signin(email, password);
+    return {
+      success: result.error === null,
+      data: result.data,
+      error: result.error
+    };
+  }
+
+  static async signUp(email: string, password: string, metadata?: any) {
+    const result = await AuthAPI.signup(
+      email, 
+      password, 
+      metadata?.full_name || '', 
+      metadata?.phone
+    );
+    return {
+      success: result.error === null,
+      data: result.data,
+      error: result.error
+    };
+  }
+
+  static async signOut() {
+    const result = await AuthAPI.signout();
+    return {
+      success: result.error === null,
+      error: result.error
+    };
   }
 }

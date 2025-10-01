@@ -40,6 +40,11 @@ Website cho **Tiếng Nhật Quang Dũng Online (TNQDO)** - thành viên của O
 │   ├── index.js     # Main server file
 │   └── package.json
 ├── src/
+│   ├── api/         # 🆕 API functions (dễ sửa và mở rộng)
+│   │   ├── config.ts   # API configuration & helpers
+│   │   ├── auth.ts     # Authentication API functions
+│   │   ├── student.ts  # Student API functions
+│   │   └── index.ts    # Export tất cả API
 │   ├── components/   # React components
 │   │   ├── ui/      # Reusable UI components (Radix UI)
 │   │   ├── figma/   # Figma-exported components
@@ -50,9 +55,9 @@ Website cho **Tiếng Nhật Quang Dũng Online (TNQDO)** - thành viên của O
 │   │   ├── RegisterPage.tsx
 │   │   ├── DashboardPage.tsx
 │   │   └── ...
-│   ├── utils/       # Utilities
-│   │   ├── auth.tsx      # Authentication service
-│   │   ├── student-api.tsx # Student API calls
+│   ├── utils/       # Utilities (re-export từ src/api/)
+│   │   ├── auth.tsx      # Re-export auth API
+│   │   ├── student-api.tsx # Re-export student API
 │   │   └── supabase/     # Supabase config
 │   └── styles/      # Global styles
 ```
@@ -214,3 +219,9 @@ npm run dev
 - Xây dựng lại API với local Node.js server
 - Cấu hình workflows: Backend (port 3000) + Frontend (port 5000)
 - Thêm environment configuration với .env file
+- **Tổ chức lại API** (01/10/2025): Tạo thư mục `src/api/` chứa tất cả API functions:
+  - `src/api/config.ts` - Cấu hình API base URL và helper functions
+  - `src/api/auth.ts` - Các function xác thực (signup, signin, signout, getSession, getCurrentUser, getAccessToken)
+  - `src/api/student.ts` - Các function cho sinh viên (getProfile, enrollCourse, getEnrollments, addGrade, getGrades)
+  - `src/api/index.ts` - Export tất cả để dễ import: `import { signup, signin, ... } from '@/api'`
+  - Files trong `src/utils/` giờ re-export từ `src/api/` để tương thích ngược
