@@ -27,30 +27,34 @@ Website cho **Tiếng Nhật Quang Dũng Online (TNQDO)** - thành viên của O
 - **Frontend**: React + TypeScript + Vite
 - **UI**: Tailwind CSS v4 + Radix UI components
 - **Styling**: Tailwind CSS (pre-compiled)
-- **Backend**: Supabase Functions (Hono framework)
-- **Database**: Supabase (PostgreSQL)
+- **Backend**: Node.js + Hono framework (local server)
+- **Database**: Supabase (PostgreSQL) với KV store
 - **Auth**: Supabase Auth
 
 ## Project Structure
 ```
-src/
-├── components/        # React components
-│   ├── ui/           # Reusable UI components (Radix UI)
-│   ├── figma/        # Figma-exported components
-│   └── *.tsx         # Page components (Hero, Header, Footer, etc.)
-├── pages/            # Main pages
-│   ├── Home.tsx
-│   ├── LoginPage.tsx
-│   ├── RegisterPage.tsx
-│   ├── DashboardPage.tsx
-│   └── ...
-├── utils/            # Utilities
-│   ├── auth.tsx      # Authentication service
-│   ├── student-api.tsx # Student API calls
-│   └── supabase/     # Supabase config
-├── supabase/         # Backend
-│   └── functions/    # Serverless functions
-└── styles/           # Global styles
+├── server/           # Backend API (Node.js + Hono)
+│   ├── routes/      # API routes
+│   │   ├── auth.js  # Authentication routes
+│   │   └── student.js # Student routes
+│   ├── index.js     # Main server file
+│   └── package.json
+├── src/
+│   ├── components/   # React components
+│   │   ├── ui/      # Reusable UI components (Radix UI)
+│   │   ├── figma/   # Figma-exported components
+│   │   └── *.tsx    # Page components (Hero, Header, Footer, etc.)
+│   ├── pages/       # Main pages
+│   │   ├── Home.tsx
+│   │   ├── LoginPage.tsx
+│   │   ├── RegisterPage.tsx
+│   │   ├── DashboardPage.tsx
+│   │   └── ...
+│   ├── utils/       # Utilities
+│   │   ├── auth.tsx      # Authentication service
+│   │   ├── student-api.tsx # Student API calls
+│   │   └── supabase/     # Supabase config
+│   └── styles/      # Global styles
 ```
 
 ## Đội Ngũ Giáo Viên
@@ -166,13 +170,16 @@ src/
    - Đăng ký khóa học mới
 
 ### API Endpoints
-- `POST /signup` - Tạo tài khoản
-- `POST /signin` - Đăng nhập (Supabase Auth)
-- `GET /profile` - Lấy thông tin profile
-- `POST /enrollments` - Đăng ký khóa học
-- `GET /enrollments` - Xem khóa học đã đăng ký
-- `POST /grades` - Thêm điểm (admin)
-- `GET /grades` - Xem điểm số
+Backend API chạy trên port 3000:
+- `POST /api/auth/signup` - Tạo tài khoản
+- `POST /api/auth/signin` - Đăng nhập (Supabase Auth)
+- `POST /api/auth/signout` - Đăng xuất
+- `GET /api/student/profile` - Lấy thông tin profile
+- `POST /api/student/enrollments` - Đăng ký khóa học
+- `GET /api/student/enrollments` - Xem khóa học đã đăng ký
+- `POST /api/student/grades` - Thêm điểm (admin)
+- `GET /api/student/grades` - Xem điểm số
+- `GET /health` - Health check endpoint
 
 ## Development
 
@@ -183,9 +190,11 @@ npm run dev
 ```
 
 ### Environment
-- Dev server: http://0.0.0.0:5000
+- Frontend dev server: http://0.0.0.0:5000
+- Backend API server: http://localhost:3000
 - Vite config: Port 5000, HMR enabled
 - Supabase: ydpwtlbeasihziydbmpx.supabase.co
+- Environment variables: `.env` file (VITE_API_URL)
 
 ### Deployment
 - Platform: Replit Autoscale
@@ -197,4 +206,11 @@ npm run dev
 - Không cần thêm tailwind.config.js
 - Sử dụng Supabase cho authentication và database
 - Frontend chạy trên port 5000 (required by Replit)
-- Backend API chạy trên Supabase Functions
+- Backend API chạy trên port 3000 (Node.js + Hono)
+- Backend sử dụng Supabase KV store (table: kv_store_68e7fa3d) để lưu trữ data
+
+## Recent Changes (Oct 2025)
+- Chuyển backend từ Supabase Edge Functions (Deno) sang Node.js + Hono
+- Xây dựng lại API với local Node.js server
+- Cấu hình workflows: Backend (port 3000) + Frontend (port 5000)
+- Thêm environment configuration với .env file
